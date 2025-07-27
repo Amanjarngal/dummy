@@ -8,7 +8,7 @@ const varifyToken = require('./middlewares/Varification')
 const app    = express();
 dotenv.config();
 const PORT = process.env.PORT || 3000;
-
+require("dotenv").config();
 app.use(express.json());
 app.use(cors());
 ConnectDB();
