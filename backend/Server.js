@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const ConnectDB = require('./config/ConnectDB')
 const {Signup, Login} = require('./controllers/User.Controller')
-const {CreatePost, getPost, getPostById, deletePost} = require('./controllers/Post.Controller')
+const {CreatePost, getPost, getPostById, deletePost, doLike, addComment} = require('./controllers/Post.Controller')
 const varifyToken = require('./middlewares/Varification')
 const app    = express();
 dotenv.config();
@@ -18,6 +18,8 @@ app.post('/signup',Signup)
 app.post('/login',Login)
 app.post('/addPost/:id',CreatePost)
 app.get('/getPost',getPost)
+app.put('/doLike/:userId/:postId',doLike)
+app.put('/addComment/:userId/:postId',addComment)
 app.get('/getPostById/:id',getPostById)
 app.delete('/deletePost/:id',deletePost)
 app.get('/user',(req,res)=>{

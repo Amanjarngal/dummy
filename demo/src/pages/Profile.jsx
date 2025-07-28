@@ -52,23 +52,22 @@ const Profile = () => {
     const showModal = (post) => {
         setShow((p) => !p);
         setModalPost(post);
-    } 
+    }
 
-    const deletePost = async(id)=>{
-        try{
-             const response = await axios.delete(`http://localhost:5000/deletePost/${id}`);
-             if(response && response.status==200)
-             {
+    const deletePost = async (id) => {
+        try {
+            const response = await axios.delete(`http://localhost:5000/deletePost/${id}`);
+            if (response && response.status == 200) {
                 alert(response.data.message);
-                setShow((p)=>!p);
-                const res = posts.filter((post)=>post._id!==id);
+                setShow((p) => !p);
+                const res = posts.filter((post) => post._id !== id);
                 setPosts(res);
-             }
-             else{
+            }
+            else {
                 alert(response.data.message || response.data.error);
-             }
+            }
         }
-        catch(error){
+        catch (error) {
             console.log(error)
         }
     }
@@ -205,19 +204,101 @@ const Profile = () => {
             </div>}
 
 
-            {show && <div style={{ position: "fixed", zIndex: "1", width: '100%', height: "100%", background: "rgba(0,0,0,0.6)", display: 'flex', justifyContent: "center", alignItems: "center", left: "0", top: "0" }}>
-                <div style={{ height: "70%", width: "50%", background: "white", borderRadius: '8px' }}>
-                    <button onClick={() => {
-                        setModalPost(null);
-                        setShow((prev) => !prev);
-                    }}>X</button>
-                    <button onClick={()=>deletePost(modalPost._id)}><MdDelete /></button>
-                    <img src={modalPost.imageUrl} style={{ height: "75%", width: "100%", borderRadius: "8px" }} />
-                    <h2>{modalPost.title}</h2>
-                    <p>{modalPost.description}</p>
-                    <span>Likes: {modalPost.like.length}</span>   <span>Comments: {modalPost.comment.length}</span>
+            {show && (
+                <div
+                    style={{
+                        position: "fixed",
+                        zIndex: 1000,
+                        width: "100vw",
+                        height: "100vh",
+                        background: "rgba(0,0,0,0.6)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        left: 0,
+                        top: 0,
+                    }}
+                >
+                    <div
+                        style={{
+                            height: "80%",
+                            width: "90%",
+                            maxWidth: "600px",
+                            background: "#fff",
+                            borderRadius: "12px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            padding: "20px",
+                            overflowY: "auto",
+                        }}
+                    >
+                        {/* Close Button */}
+                        <button
+                            onClick={() => {
+                                setModalPost(null);
+                                setShow((prev) => !prev);
+                            }}
+                            style={{
+                                position: "absolute",
+                                top: "10px",
+                                right: "10px",
+                                background: "transparent",
+                                border: "none",
+                                fontSize: "20px",
+                                cursor: "pointer",
+                            }}
+                            aria-label="Close modal"
+                        >
+                            ❌
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                            onClick={() => deletePost(modalPost._id)}
+                            style={{
+                                position: "absolute",
+                                top: "10px",
+                                left: "10px",
+                                background: "red",
+                                border: "none",
+                                color: "white",
+                                borderRadius: "4px",
+                                padding: "6px 10px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            🗑️ Delete
+                        </button>
+
+                        {/* Content */}
+                        <img
+                            src={modalPost.imageUrl}
+                            alt={modalPost.title}
+                            style={{
+                                width: "100%",
+                                height: "300px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                marginBottom: "16px",
+                                marginTop: "25px"
+                            }}
+                        />
+                        <h2 style={{ marginBottom: "8px" }}>{modalPost.title}</h2>
+                        <p style={{ marginBottom: "16px", color: "#444" }}>
+                            {modalPost.description}
+                        </p>
+
+                        {/* Stats */}
+                        <div style={{ display: "flex", gap: "20px", fontWeight: "500" }}>
+                            <span>👍 Likes: {modalPost.like.length}</span>
+                            <span>💬 Comments: {modalPost.comment.length}</span>
+                        </div>
+                    </div>
                 </div>
-            </div>}
+            )}
+
 
 
         </>
