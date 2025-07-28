@@ -40,8 +40,8 @@ const Login = async(req,res)=>{
                  res.status(500).json({message:"Invalid Cridentials!"});
             }
             else{
-                const token = await jwt.sign({id:user._id},process.env.SECRAT_KEY,{expiresIn:"1h"});
-                res.status(200).json({message:"Logined Successfully!",token});
+                const token = await jwt.sign({id:user._id},process.env.SECRAT_KEY);
+                res.status(200).json({message:"Logined Successfully!",token,user});
                
             }
         }

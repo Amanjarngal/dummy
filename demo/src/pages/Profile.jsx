@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { MdDelete } from "react-icons/md";
 
 const Profile = () => {
     const [posts, setPosts] = useState([]);
@@ -7,7 +8,9 @@ const Profile = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
-
+    const userId = localStorage.getItem('userId');
+    const [show, setShow] = useState(false);
+    const [modalPost, setModalPost] = useState(null);
     // Dummy user info
     const user = {
         name: "John Doe",
@@ -16,7 +19,8 @@ const Profile = () => {
     };
 
     const addPost = async () => {
-        const response = await axios.post("http://localhost:5000/addPost", { title, description, imageUrl });
+
+        const response = await axios.post(`http://localhost:5000/addPost/${userId}`, { title, description, imageUrl });
         if (response && response.status === 200) {
             alert(response.data.message);
             setTitle('');
@@ -33,9 +37,10 @@ const Profile = () => {
 
     useEffect(() => {
         const getData = async () => {
-            const response = await axios.get("http://localhost:5000/getPost");
+            const response = await axios.get(`http://localhost:5000/getPostById/${userId}`);
             if (response && response.status === 200) {
-                setPosts(response.data.posts);
+                setPosts(response.data.response);
+                console.log(response);
             } else {
                 console.log(response.data.message || response.data.error);
             }
@@ -43,12 +48,37 @@ const Profile = () => {
         getData();
     }, []);
 
+
+    const showModal = (post) => {
+        setShow((p) => !p);
+        setModalPost(post);
+    } 
+
+    const deletePost = async(id)=>{
+        try{
+             const response = await axios.delete(`http://localhost:5000/deletePost/${id}`);
+             if(response && response.status==200)
+             {
+                alert(response.data.message);
+                setShow((p)=>!p);
+                const res = posts.filter((post)=>post._id!==id);
+                setPosts(res);
+             }
+             else{
+                alert(response.data.message || response.data.error);
+             }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
     return (
         <>
             {/* Profile Header Section */}
             <div style={{
                 display: 'flex',
-                justifyContent:"center",
+                justifyContent: "center",
                 alignItems: 'center',
                 padding: '30px',
                 backgroundColor: '#fff',
@@ -99,7 +129,7 @@ const Profile = () => {
                                 width: "100%",
                                 height: "100%",
                                 objectFit: "cover"
-                            }} />
+                            }} onClick={() => showModal(post)} />
                         </div>
                     ))}
                 </div>
@@ -173,6 +203,23 @@ const Profile = () => {
                     </div>
                 </div>
             </div>}
+
+
+            {show && <div style={{ position: "fixed", zIndex: "1", width: '100%', height: "100%", background: "rgba(0,0,0,0.6)", display: 'flex', justifyContent: "center", alignItems: "center", left: "0", top: "0" }}>
+                <div style={{ height: "70%", width: "50%", background: "white", borderRadius: '8px' }}>
+                    <button onClick={() => {
+                        setModalPost(null);
+                        setShow((prev) => !prev);
+                    }}>X</button>
+                    <button onClick={()=>deletePost(modalPost._id)}><MdDelete /></button>
+                    <img src={modalPost.imageUrl} style={{ height: "75%", width: "100%", borderRadius: "8px" }} />
+                    <h2>{modalPost.title}</h2>
+                    <p>{modalPost.description}</p>
+                    <span>Likes: {modalPost.like.length}</span>   <span>Comments: {modalPost.comment.length}</span>
+                </div>
+            </div>}
+
+
         </>
     );
 };
